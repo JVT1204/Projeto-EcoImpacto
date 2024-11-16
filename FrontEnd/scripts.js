@@ -27,11 +27,31 @@ function abrirquiz() {
             novoDiv.innerHTML = data;
             document.body.appendChild(novoDiv);
             document.body.appendChild(novoBotao);
+        
+            //adicionando o script manualmente
+            var script = document.createElement("script");
+            script.innerHTML = `
+                document.getElementById('quizForm').addEventListener('submit', function(event) {
+                    var todasRespostas = true;
+                    var perguntas = ['q1', 'q2', 'q3', 'q4', 'q5'];
+                    
+                    perguntas.forEach(function(pergunta) {
+                        var opcoes = document.getElementsByName(pergunta);
+                        var umChecado = Array.from(opcoes).some(opcao => opcao.checked);
+                        if (!umChecado) {
+                            todasRespostas = false;
+                        }
+                    });
+                    
+                    if (!todasRespostas) {
+                        event.preventDefault();
+                        alert('Por favor, responda todas as perguntas antes de enviar o quiz.');
+                    }
+                });
+            `;
+            document.body.appendChild(script);
         })
-        .catch(error);
-
-    document.body.appendChild(novoDiv);
-    document.body.appendChild(novoBotao);
+    .catch(error);
 }
 function fecharquiz() {
     var divQuiz = document.querySelectorAll(".quizContainer, .quizBotao");
@@ -74,6 +94,18 @@ function fecharjogo() {
     divQuiz.forEach(function(element){
         element.remove();
     });
+    if (!fim && pontuacao != 0){
+        fetch('/enviarPontuacao', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ pontuacao: pontuacao })
+        })
+        .catch(error => {
+            console.error('Erro ao enviar a pontuação:', error);
+        });  
+    }
     fim = true;
     clearInterval(intervaloCriarLixoID);
     clearInterval(intervaloMoverLixoID);
@@ -171,6 +203,18 @@ function moverLixo(intervalo, lixeiraDiv, pontosDiv) {
                         textoFim.className = "pontos fim";
                         document.body.appendChild(textoFim);
                         fim = true;
+                        if (pontuacao != 0){
+                            fetch('/enviarPontuacao', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ pontuacao: pontuacao })
+                            })
+                            .catch(error => {
+                                console.error('Erro ao enviar a pontuação:', error);
+                            });  
+                        }
                     } else if (checarColisao(arrayDeLixos[i], lixeiraDiv)) {
                         document.body.removeChild(arrayDeLixos[i]);
                         arrayDeLixos.splice(i, 1);
