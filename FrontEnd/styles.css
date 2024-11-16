@@ -38,7 +38,6 @@ html, body {
 }
 .ConteudoMeio input {
     border: 1px solid #e6bf2f;
-    color: #3b8b37;
 }
 .Inicio {
     margin-top: 4.16%;
@@ -87,15 +86,15 @@ html, body {
     top: 28.2%;
     left: 61.4%;
     z-index: 10;
-    width: 200%;
     align-items: center;
 }
 .quizBotao button {
+    transform: scale(1.5);
     font-weight: bold;
     background-color: #e6bf2f;
     outline: 2px solid #3b8b37;
     border-radius: 30px;
-    padding: 0.3% 0.4%;
+    padding: 80% 115%;
     border: none;
     cursor: pointer;
     color:#3b8b37;

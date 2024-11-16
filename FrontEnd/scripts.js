@@ -89,6 +89,7 @@ function logicajogo() {
     
     var estaArrastando = false;
     
+    //logica de movimentação da lixeira
     lixeiraDiv.addEventListener('mousedown', (e) => {
         console.log('Div com classe lixeira está sendo clicado e segurado');
         estaArrastando = true;
