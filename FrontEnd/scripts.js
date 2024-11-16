@@ -82,7 +82,6 @@ function logicajogo() {
     
     //divs aparecem aleatoriamente em Y fixo num X limitado pelo tamanho do div, aparece um div com imagem de lata de lixo abaixo
     //esses divs acima tem imagens de lixo
-    var container = document.querySelector('.ConteudoMeio');
     var lixeiraDiv = document.createElement("div");
     lixeiraDiv.className = "lixeira";
     document.body.appendChild(lixeiraDiv);
@@ -91,14 +90,12 @@ function logicajogo() {
     
     //logica de movimentação da lixeira
     lixeiraDiv.addEventListener('mousedown', (e) => {
-        console.log('Div com classe lixeira está sendo clicado e segurado');
         estaArrastando = true;
         //previne seleção de texto ao arrastar
         e.preventDefault();
     });
     
     lixeiraDiv.addEventListener('mouseup', () => {
-        console.log('Mouse liberado sobre o div com classe lixeira');
         estaArrastando = false;
     });
     
@@ -110,7 +107,6 @@ function logicajogo() {
             var mouseX = e.clientX;
             if (mouseX >= minLeft && mouseX <= maxLeft) {
                 lixeiraDiv.style.left = `${mouseX}px`;
-                console.log(`Lixeira movida para posição X: ${mouseX}`);
             }
         }
     });
