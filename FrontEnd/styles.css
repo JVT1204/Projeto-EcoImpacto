@@ -14,7 +14,7 @@ html, body {
     align-items:center;
 }
 .ConteudoBanner {
-    margin-left: 37.5%;
+    margin-left: 32.5%;
 }
 .ConteudoBanner button {
     text-decoration: underline;
@@ -35,6 +35,10 @@ html, body {
 }
 .ConteudoMeio {
     color:#e6bf2f;
+}
+.ConteudoMeio input {
+    border: 1px solid #e6bf2f;
+    color: #3b8b37;
 }
 .Inicio {
     margin-top: 4.16%;

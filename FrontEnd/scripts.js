@@ -10,6 +10,9 @@ function quiz() {
 function saibamais() {
     window.location.href = "saibamais.html";
 }
+function login() {
+    window.location.href = "login.html";
+}
 function abrirquiz() {
     fecharquiz();
     var novoDiv = document.createElement("div");
@@ -79,17 +82,44 @@ function logicajogo() {
     
     //divs aparecem aleatoriamente em Y fixo num X limitado pelo tamanho do div, aparece um div com imagem de lata de lixo abaixo
     //esses divs acima tem imagens de lixo
+    var container = document.querySelector('.ConteudoMeio');
     var lixeiraDiv = document.createElement("div");
     lixeiraDiv.className = "lixeira";
     document.body.appendChild(lixeiraDiv);
+    
+    var estaArrastando = false;
+    
+    lixeiraDiv.addEventListener('mousedown', (e) => {
+        console.log('Div com classe lixeira está sendo clicado e segurado');
+        estaArrastando = true;
+        //previne seleção de texto ao arrastar
+        e.preventDefault();
+    });
+    
+    lixeiraDiv.addEventListener('mouseup', () => {
+        console.log('Mouse liberado sobre o div com classe lixeira');
+        estaArrastando = false;
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (estaArrastando) {
+            var minLeft = window.innerWidth * 0.3723;
+            var maxLeft = minLeft + (window.innerWidth * 0.2324);
 
+            var mouseX = e.clientX;
+            if (mouseX >= minLeft && mouseX <= maxLeft) {
+                lixeiraDiv.style.left = `${mouseX}px`;
+                console.log(`Lixeira movida para posição X: ${mouseX}`);
+            }
+        }
+    });
+    
     var pontosDiv = document.createElement("div");
     pontosDiv.innerHTML = "<h2>Pontuação: 0</h2>";
     pontosDiv.className = "pontos";
     document.body.appendChild(pontosDiv);
 
     criarLixo(6, 3000, lixeiraDiv, pontosDiv);
-    moverLixeira();
     //os divs de lixo se movem para baixo
     //o div de lixeira é movido com o mouse ao segurar ele até os máximos do div container
 
@@ -168,7 +198,4 @@ function checarColisao(div1, div2) {
                       rect1.bottom < rect2.top || 
                       rect1.top > rect2.bottom );
     return colidindo;
-}
-function moverLixeira() {
-
 }
