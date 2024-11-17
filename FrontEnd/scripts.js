@@ -13,6 +13,15 @@ function saibamais() {
 function login() {
     window.location.href = "login.html";
 }
+// Chave-valor das respostas corretas
+const respostasCorretas = {
+    q1: "c",
+    q2: "a",
+    q3: "c",
+    q4: "b",
+    q5: "a"
+};
+
 function abrirquiz() {
     fecharquiz();
     var novoDiv = document.createElement("div");
@@ -28,31 +37,81 @@ function abrirquiz() {
             document.body.appendChild(novoDiv);
             document.body.appendChild(novoBotao);
         
-            //adicionando o script manualmente
+            // adicionando o script manualmente
             var script = document.createElement("script");
             script.innerHTML = `
                 document.getElementById('quizForm').addEventListener('submit', function(event) {
-                    var todasRespostas = true;
-                    var perguntas = ['q1', 'q2', 'q3', 'q4', 'q5'];
-                    
-                    perguntas.forEach(function(pergunta) {
-                        var opcoes = document.getElementsByName(pergunta);
-                        var umChecado = Array.from(opcoes).some(opcao => opcao.checked);
-                        if (!umChecado) {
-                            todasRespostas = false;
-                        }
-                    });
-                    
-                    if (!todasRespostas) {
-                        event.preventDefault();
-                        alert('Por favor, responda todas as perguntas antes de enviar o quiz.');
-                    }
+                    event.preventDefault();
+                    var pontuacao = corrigirQuiz();
+                    enviarPontuacaoQuiz(pontuacao);
                 });
             `;
             document.body.appendChild(script);
         })
-    .catch(error);
+        .catch((error) => {
+            console.error('Erro ao carregar o quiz:', error);
+        });
 }
+
+function corrigirQuiz() {
+    var pontuacao = 0;
+    var perguntas = ['q1', 'q2', 'q3', 'q4', 'q5'];
+
+    perguntas.forEach(function(pergunta) {
+        var opcoes = document.getElementsByName(pergunta);
+        opcoes.forEach(function(opcao) {
+            if (opcao.checked && opcao.value === respostasCorretas[pergunta]) {
+                pontuacao += 1;
+            }
+        });
+    });
+
+    alert('Sua pontuação: ' + pontuacao);
+    return pontuacao;
+}
+
+function enviarPontuacaoQuiz(pontuacao) {
+    const email = getCookie("userEmail");
+    const password = getCookie("userPassword");
+
+    if (!email || !password) {
+        alert("Você precisa estar logado para enviar a pontuação.");
+        return;
+    }
+
+    const dados = {
+        email: email,
+        password: password,
+        pontosQuiz: pontuacao
+    };
+
+    fetch("http://localhost:8080/api/pontosQuiz", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Pontuação do quiz enviada com sucesso!");
+        } else if (response.status === 401) {
+            alert("E-mail ou senha incorretos.");
+        } else {
+            alert("Erro ao enviar pontuação.");
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+}
+
+function getCookie(name) {
+    let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (match) return match[2];
+    return null;
+}
+
 function fecharquiz() {
     var divQuiz = document.querySelectorAll(".quizContainer, .quizBotao");
     divQuiz.forEach(function(element){
@@ -204,16 +263,7 @@ function moverLixo(intervalo, lixeiraDiv, pontosDiv) {
                         document.body.appendChild(textoFim);
                         fim = true;
                         if (pontuacao != 0){
-                            fetch('/enviarPontuacao', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ pontuacao: pontuacao })
-                            })
-                            .catch(error => {
-                                console.error('Erro ao enviar a pontuação:', error);
-                            });  
+                            enviarPontuacaoMinigame(pontuacao);
                         }
                     } else if (checarColisao(arrayDeLixos[i], lixeiraDiv)) {
                         document.body.removeChild(arrayDeLixos[i]);
@@ -239,4 +289,40 @@ function checarColisao(div1, div2) {
                       rect1.bottom < rect2.top || 
                       rect1.top > rect2.bottom );
     return colidindo;
+}
+
+function enviarPontuacaoMinigame(pontos) {
+    const email = getCookie("userEmail");
+    const password = getCookie("userPassword");
+
+    if (!email || !password) {
+        alert("Você precisa estar logado para enviar a pontuação.");
+        return;
+    }
+
+    const dados = {
+        email: email,
+        password: password,
+        pontosMinigame: pontos
+    };
+
+    fetch("http://localhost:8080/api/pontosMinigame", {  // URL corrigida
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Pontuação enviada com sucesso!");
+        } else if (response.status === 401) {
+            alert("E-mail ou senha incorretos.");
+        } else {
+            alert("Erro ao enviar pontuação.");
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
 }
